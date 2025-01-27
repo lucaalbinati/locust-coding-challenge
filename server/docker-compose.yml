@@ -9,7 +9,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
-    command: python app/app.py
+    command: python app.py
     ports:
       - "8888:8888"
 
