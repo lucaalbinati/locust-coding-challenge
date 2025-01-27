@@ -71,6 +71,27 @@ class CPUUsage(db.Model):
 ###################################
 
 
+@app.route("/initdb", methods=["GET"])
+def initdb():
+    """
+    A helper route to create or re-create the database tables.
+    Not recommended for production usage directly as a route.
+    """
+    db.drop_all()
+    db.create_all()
+
+    # Optionally, create a demo user:
+    demo_user = User(username="demo", password="demo123", full_name="Demo User")
+    db.session.add(demo_user)
+
+    # Optionally, create a demo test run:
+    test_run_demo = TestRun(name="Load Test #1")
+    db.session.add(test_run_demo)
+
+    db.session.commit()
+    return jsonify({"message": "Database tables created and demo data added."}), 200
+
+
 @app.route("/login", methods=["POST"])
 def login():
     """
