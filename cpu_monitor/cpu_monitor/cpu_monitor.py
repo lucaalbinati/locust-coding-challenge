@@ -167,6 +167,7 @@ class CPUMonitor:
         if not self.running:
             # Prevent multiple invocations
             return
+
         self.running = False
         current_time = datetime.now()
         total_time = (current_time - self.start_time).total_seconds()
