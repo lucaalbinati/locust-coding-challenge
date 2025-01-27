@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from config import DATABASE_URI, JWT_SECRET_KEY
 from dotenv import load_dotenv
@@ -49,6 +50,7 @@ class TestRun(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    end_time = db.Column(db.DateTime, nullable=True)
 
 
 class CPUUsage(db.Model):
@@ -114,6 +116,33 @@ def login():
     return jsonify({"full_name": user.full_name, "access_token": access_token}), 200
 
 
+@app.route("/test_runs", methods=["POST"])
+@jwt_required()
+def create_test_run():
+    """
+    Creates a new TestRun.
+    Expects a JSON payload with an optional 'name' field.
+    """
+    data = request.get_json()
+    name = data.get("name", f"TestRun_{int(time.time())}")
+
+    test_run = TestRun(name=name)
+
+    db.session.add(test_run)
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "id": test_run.id,
+                "name": test_run.name,
+                "start_time": test_run.start_time.isoformat(),
+            }
+        ),
+        201,
+    )
+
+
 @app.route("/test_runs/<int:test_run_id>/cpu_usage", methods=["POST"])
 @jwt_required()
 def create_cpu_usage(test_run_id):
@@ -147,6 +176,30 @@ def create_cpu_usage(test_run_id):
             }
         ),
         201,
+    )
+
+
+@app.route("/test_runs/<int:test_run_id>/end", methods=["PUT"])
+@jwt_required()
+def end_test_run(test_run_id):
+    """
+    Marks the TestRun as ended by setting the end_time.
+    """
+    test_run = TestRun.query.get(test_run_id)
+    if not test_run:
+        return jsonify({"message": "Test run not found"}), 404
+
+    if test_run.end_time:
+        return jsonify({"message": "Test run already ended."}), 400
+
+    test_run.end_time = datetime.datetime.now()
+    db.session.commit()
+
+    return (
+        jsonify(
+            {"message": "Test run ended.", "end_time": test_run.end_time.isoformat()}
+        ),
+        200,
     )
 
 
