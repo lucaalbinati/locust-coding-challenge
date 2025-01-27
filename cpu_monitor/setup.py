@@ -15,7 +15,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cpu_monitor=cpu_monitor.monitor:main",
+            "cpu_monitor=cpu_monitor.cpu_monitor:main",
         ],
     },
     classifiers=[
