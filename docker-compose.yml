@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    container_name: locust-api
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: python app/app.py
+    ports:
+      - "8888:8888"
+
+  db:
+    image: postgres:15
+    container_name: locust-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=locust
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
