@@ -33,7 +33,6 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
-    access_token = db.Column(db.String(500), nullable=True)
 
     def __init__(self, username, password, full_name):
         self.username = username
@@ -105,9 +104,6 @@ def login():
         return jsonify({"message": "Invalid username or password"}), 401
 
     access_token = create_access_token(identity=user.username)
-
-    user.access_token = access_token
-    db.session.commit()
 
     return jsonify({"full_name": user.full_name, "access_token": access_token}), 200
 

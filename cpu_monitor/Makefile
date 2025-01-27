@@ -1,7 +1,7 @@
 .PHONY: install lint format sort
 
 install:
-	pip install -r requirements.tx
+	pip install -r requirements.txt
 
 lint:
 	flake8 .

@@ -89,7 +89,6 @@ class CPUMonitor:
             test_run_id (int): ID of the created TestRun.
         """
         test_runs_endpoint = f"{self.api_url}/test_runs"
-        print(self.access_token)
         headers = {"Authorization": f"Bearer {self.access_token}"}
         payload = {"name": self.name if self.name else f"TestRun_{int(time.time())}"}
 
@@ -199,15 +198,12 @@ class CPUMonitor:
                 current_time = datetime.now()
                 usage_percent = psutil.cpu_percent(interval=None)  # Non-blocking
 
-                # Send CPU usage data to the API
                 self.send_cpu_usage(usage_percent)
 
-                # Display current CPU usage
                 print(
                     f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] CPU Usage: {usage_percent:.2f}%"
                 )
 
-                # Check against threshold
                 if usage_percent > self.threshold:
                     if not self.above_threshold_start:
                         self.above_threshold_start = datetime.now()
@@ -221,7 +217,6 @@ class CPUMonitor:
                         self.total_above_threshold += duration
                         self.above_threshold_start = None
 
-                # Wait for the next interval
                 time.sleep(self.interval)
 
         except Exception as e:
