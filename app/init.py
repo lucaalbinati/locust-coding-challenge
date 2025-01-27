@@ -5,7 +5,7 @@ init_db.py: A standalone script to initialize (drop & create) database tables.
 WARNING: This will destroy all existing data in the configured database.
 """
 
-from app import app, db, User, TestRun
+from app import TestRun, User, app, db
 
 
 def init_db():
@@ -23,6 +23,7 @@ def init_db():
 
         db.session.commit()
         print("Database initialized, tables created, and demo data inserted.")
+
 
 if __name__ == "__main__":
     init_db()

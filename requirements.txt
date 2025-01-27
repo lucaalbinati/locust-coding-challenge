@@ -4,3 +4,6 @@ Flask-JWT-Extended==4.4.4
 psycopg2-binary==2.9.6
 Werkzeug==2.2.2
 load-dotenv==0.1.0
+flake8==7.1.1
+black==24.10.0
+isort==5.13.2

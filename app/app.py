@@ -1,12 +1,11 @@
 import datetime
 
-from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from werkzeug.security import generate_password_hash, check_password_hash
-
 from config import DATABASE_URI, JWT_SECRET_KEY
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
@@ -24,6 +23,7 @@ db = SQLAlchemy(app)
 ###################################
 # MODELS
 ###################################
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -62,13 +62,14 @@ class CPUUsage(db.Model):
     # Relationship
     test_run = db.relationship(
         "TestRun",
-        backref=db.backref("cpu_entries", lazy=True, cascade="all, delete-orphan")
+        backref=db.backref("cpu_entries", lazy=True, cascade="all, delete-orphan"),
     )
 
 
 ###################################
 # ROUTES
 ###################################
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -89,10 +90,7 @@ def login():
     user.access_token = access_token
     db.session.commit()
 
-    return jsonify({
-        "full_name": user.full_name,
-        "access_token": access_token
-    }), 200
+    return jsonify({"full_name": user.full_name, "access_token": access_token}), 200
 
 
 @app.route("/test_runs/<int:test_run_id>/cpu_usage", methods=["POST"])
@@ -118,12 +116,17 @@ def create_cpu_usage(test_run_id):
     db.session.add(cpu_entry)
     db.session.commit()
 
-    return jsonify({
-        "message": "CPU usage data created",
-        "cpu_usage_id": cpu_entry.id,
-        "test_run_id": cpu_entry.test_run_id,
-        "usage_percent": cpu_entry.usage_percent
-    }), 201
+    return (
+        jsonify(
+            {
+                "message": "CPU usage data created",
+                "cpu_usage_id": cpu_entry.id,
+                "test_run_id": cpu_entry.test_run_id,
+                "usage_percent": cpu_entry.usage_percent,
+            }
+        ),
+        201,
+    )
 
 
 @app.route("/test_runs/<int:test_run_id>/cpu_usage", methods=["GET"])
@@ -140,17 +143,24 @@ def read_cpu_usage(test_run_id):
 
     output = []
     for entry in cpu_entries:
-        output.append({
-            "id": entry.id,
-            "usage_percent": entry.usage_percent,
-            "timestamp": entry.timestamp.isoformat()
-        })
+        output.append(
+            {
+                "id": entry.id,
+                "usage_percent": entry.usage_percent,
+                "timestamp": entry.timestamp.isoformat(),
+            }
+        )
 
-    return jsonify({
-        "test_run_id": test_run_id,
-        "test_run_name": test_run.name,
-        "cpu_usage": output
-    }), 200
+    return (
+        jsonify(
+            {
+                "test_run_id": test_run_id,
+                "test_run_name": test_run.name,
+                "cpu_usage": output,
+            }
+        ),
+        200,
+    )
 
 
 if __name__ == "__main__":

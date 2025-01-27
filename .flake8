@@ -1,0 +1,12 @@
+[flake8]
+# Ignore specific error codes
+#ignore = D100, D101, D102, D103, D104, D105, D106, D107, D205, D400, D401, D403, D213, D202, W503
+
+# Maximum allowed line length
+max-line-length = 120
+
+# Indentation style (flake8 uses tabs or spaces, not "two spaces")
+indent-size = 4
+
+# Exclude specific directories from linting
+exclude = tests, __pycache__, .venv, .env, build, dist
